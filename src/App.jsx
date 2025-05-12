@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Search from './components/Search';
+import { Spinner } from './components/Spinner';
+import { MovieCard } from './components/MovieCard';
 const App = () => {
 const [searchTerm, setSearchTerm] = useState('')
 const [error, setError] = useState("")
@@ -53,21 +55,20 @@ fetchMovies()
 }, [])
   return (
     <main>
-        <div className='pattern' />
-        <div className='wrapper'>
+        <div className='pattern ' />
+        <div className='wrapper text-white'>
             <header>
                 <img src="./hero.png"/>
                 <h1>Favourite <span className='text-gradient'>Movies</span> You will Like</h1>
                 <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-                <p className='text-3xl text-white'>searc Term: {searchTerm}</p>
             </header>
-            <section className='all-movies'>
+            <section className='all-movies mt-[40px]'>
                 <h2>All Movies</h2>
                 {error && <p className='text-red-500'>{error}</p>}
                 {isLoading ? 
                 
                 (
-                  <p>Loading</p>
+                  <Spinner />
                 )
                 
                 : error ? (
@@ -76,10 +77,13 @@ fetchMovies()
                 ) :
                 
                 <ul>
-                    {movieList.map((data) =>{
+                    {movieList.map((movie) =>{
 
                         return(
-                          <li>Test List</li>
+                          <MovieCard  
+                          key={movie.id}
+                          movie={movie}
+                          />
                         )
                     })}
                 </ul>
