@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react'
 import Search from './components/Search';
 import { Spinner } from './components/Spinner';
 import { MovieCard } from './components/MovieCard';
+import {useDebounce} from "react-use";
 const App = () => {
 const [searchTerm, setSearchTerm] = useState('')
 const [error, setError] = useState("")
 const [movieList, setMovieList] = useState([])
 const [isLoading, setIsLoading] = useState(false)
+const [debouncedTerm, setDebouncedTerm] = useState()
+
+useDebounce(() => {
+  setDebouncedTerm(searchTerm)
+}, 500, [searchTerm])
 const API_URL = "https://api.themoviedb.org/3/"
 const API_KEY = import.meta.env.VITE_TMDB_READ_TOKEN_KEY
 console.log("api_key", API_KEY)
@@ -19,10 +25,10 @@ const options = {
 }
 useEffect(()=>{
 
-  const fetchMovies = async () =>{
+  const fetchMovies = async (query="") =>{
     try {
       setIsLoading(true)
-      const api_endpoint = `${API_URL}discover/movie?sort_by=popularity.desc`
+      const api_endpoint = query ? `${API_URL}search/movie?query=${query}` : `${API_URL}discover/movie?sort_by=popularity.desc`
       const response = await fetch(api_endpoint, options)
       console.log("ressss", options)
       console.log("response", response)
@@ -51,8 +57,8 @@ useEffect(()=>{
 
     }
   } 
-fetchMovies()
-}, [])
+fetchMovies(debouncedTerm)
+}, [debouncedTerm])
   return (
     <main>
         <div className='pattern ' />
@@ -60,7 +66,7 @@ fetchMovies()
             <header>
                 <img src="./hero.png"/>
                 <h1>Favourite <span className='text-gradient'>Movies</span> You will Like</h1>
-                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+                <Search searchTerm={encodeURIComponent(searchTerm)} setSearchTerm={setSearchTerm}/>
             </header>
             <section className='all-movies mt-[40px]'>
                 <h2>All Movies</h2>
